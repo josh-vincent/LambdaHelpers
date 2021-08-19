@@ -1,15 +1,15 @@
-# LambdaHelpers
+/* Amplify Params - DO NOT EDIT
+	ENV
+	REGION
+Amplify Params - DO NOT EDIT */
 
-## Stripe
-yarn add stripe
+// Store secrets as ENV variables in lambda
 
-```
 const AWS = require("aws-sdk");
-AWS.config.update({ region: "ap-southeast-2" });
+AWS.config.update({ region: process.env.REGION });
 
-//* Store STRIPE KEYS as ENV Variables.
-const stripe = require("stripe")(STRIPE_SECRET_KEY);
-const stripeTest = require("stripe")(STRIPE_TEST_KEY);
+const stripe = require("stripe")(process.env.STRIPE_LIVE_KEY);
+const stripeTest = require("stripe")(process.env.STRIPE_TEST_KEY);
 
 exports.handler = async (event, context, callback) =>
 {
@@ -35,6 +35,7 @@ exports.handler = async (event, context, callback) =>
 
         callback(null, JSON.stringify(collatedProducts));
         return response;
+
     } catch (error)
     {
         console.error("error", error);
@@ -45,9 +46,8 @@ exports.handler = async (event, context, callback) =>
         return response;
     }
 };
-```
 
-```
+
 async function getProductsFromStripe(productId)
 {
     const product = await stripeTest.products.retrieve(
@@ -56,19 +56,15 @@ async function getProductsFromStripe(productId)
 
     return product;
 }
-```
 
-```
 async function listProductsFromStripe()
 {
     const products = await stripeTest.products.list({active: true});
     return products;
 }
-```
 
 async function listPricesFromStripe()
 {
     const prices = await stripeTest.prices.list({ active: true });
     return prices;
 }
-```
