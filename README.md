@@ -1,9 +1,9 @@
 # LambdaHelpers
 
 ## Stripe
-yarn add stripe
+`yarn add stripe`
 
-```
+```javascript
 const AWS = require("aws-sdk");
 AWS.config.update({ region: "ap-southeast-2" });
 
@@ -47,7 +47,7 @@ exports.handler = async (event, context, callback) =>
 };
 ```
 
-```
+```javascript
 async function getProductsFromStripe(productId)
 {
     const product = await stripeTest.products.retrieve(
@@ -58,7 +58,7 @@ async function getProductsFromStripe(productId)
 }
 ```
 
-```
+```javascript
 async function listProductsFromStripe()
 {
     const products = await stripeTest.products.list({active: true});
@@ -66,6 +66,7 @@ async function listProductsFromStripe()
 }
 ```
 
+```javascript
 async function listPricesFromStripe()
 {
     const prices = await stripeTest.prices.list({ active: true });
