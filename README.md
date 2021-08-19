@@ -73,3 +73,57 @@ async function listPricesFromStripe()
     return prices;
 }
 ```
+## Stripe Webhook
+
+```javascript
+app.post("/webhook", async function (req, res)
+{
+  // Check Stripe signature
+  const sig = req.headers['stripe-signature']
+  let event
+  try
+  {
+    event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret)
+  } catch (err)
+  {
+    return res.status(400).send(`Webhook Error: ${err.message}`)
+  }
+  console.log(JSON.stringify(event))
+
+  let product;
+  let cognitoUserItem;
+
+  switch (event.type)
+  {
+
+    case 'checkout.session.completed':
+
+      if (req.body.data.object.mode == 'subscription')
+      {
+       //Subscription completed ...
+      } else if (req.body.data.object.mode == 'payment')
+      {
+        // Payment completed...
+      }
+      break
+
+    case 'customer.subscription.updated':
+      // Subscription updated ...
+      break;
+
+    case 'customer.subscription.deleted':
+      // Subscription deleted
+      break;
+
+    case 'customer.subscription.created':
+      // Subscription Created
+      break;
+
+    default:
+      // Unexpected event type
+      return res.status(400).end()
+  }
+  // Return a response to acknowledge receipt of the event
+  res.json({ received: true })
+})
+```
