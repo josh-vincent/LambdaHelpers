@@ -182,6 +182,24 @@ app.post('/create-customer-portal-session', async (req, res) =>
 Assign correct permissions to update cognito with lambda role
 
 ```javascript
+const AWS = require("aws-sdk");
+const userPoolId = 'YOUR_USER_POOL_ID';
+const cognito = new AWS.CognitoIdentityServiceProvider();
+
+async function getUserByEmailFromCognito(email, userPoolId)
+{
+    const listUsersResponse = await cognito.listUsers({
+        UserPoolId: userPoolId,
+        Filter: `email = "${email}"`,
+        Limit: 1
+    }).promise();
+    const user = listUsersResponse.Users[0];
+    console.log(user);
+    return user;
+}
+```
+
+```javascript
 // Value containing {stripe_id: cus_123456}
 const updateCognito = async (userPoolId, userName, value) =>
 {

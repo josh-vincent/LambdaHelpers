@@ -11,6 +11,7 @@ var express = require('express')
 var bodyParser = require('body-parser')
 var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 
+let returnUrl = 'https://www.mywebsite.com/dashboard';
 // declare a new express app
 var app = express()
 app.use(bodyParser.json())
@@ -27,7 +28,6 @@ app.use(function (req, res, next)
   next();
 });
 
-
 app.post('/create-customer-portal-session', async (req, res) =>
 {
   try
@@ -35,7 +35,7 @@ app.post('/create-customer-portal-session', async (req, res) =>
     // Authenticate your user.
     const session = await stripe.billingPortal.sessions.create({
       customer: `${req.body.stripe_id}`,
-      return_url: 'https://www.barefootbudgets.com.au/account',
+      return_url: returnUrl,
     });
     res.json(session);
   } catch (err)

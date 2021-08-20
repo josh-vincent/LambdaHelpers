@@ -1,20 +1,20 @@
 /* Amplify Params - DO NOT EDIT
-	AUTH_FINANCEWEBAPP97F25861_USERPOOLID
 	ENV
 	REGION
 Amplify Params - DO NOT EDIT */
+
 const AWS = require("aws-sdk");
-AWS.config.update({ region: "ap-southeast-2" });
+AWS.config.update({ region: process.env.REGION });
 
 const COGNITO = new AWS.CognitoIdentityServiceProvider({
     apiVersion: "2016-04-18",
 });
-const stripeTest = require("stripe")(
-    "sk_test_ubDVscDUXB04y842N53sxWjh00advqWqiU"
-);
-const stripe = require("stripe")("sk_live_pGMoYL65V4KEDT0cT8uJESHV00bv0VCBip");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripeTest = require("stripe")(process.env.STRIPE_TEST_KEY);
+
 const docClient = new AWS.DynamoDB.DocumentClient();
-const TABLE_NAME = "TokenWallet-6wiu2jqrbjclbjnypn6l3ta7kq-dev";
+const tableName = process.env.TABLE_NAME;
+
 const uuid = require("uuid");
 const bip39 = require("bip39");
 const { hdkey, Wallet } = require("ethereumjs-wallet");
@@ -115,7 +115,7 @@ async function createStartingWallet(account, amount, public_address, email)
 {
     console.log("updating balance:", account, amount);
     var inputParams = {
-        TableName: TABLE_NAME,
+        TableName: tableName,
         Key: {
             id: account,
         },
