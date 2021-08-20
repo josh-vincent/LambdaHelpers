@@ -200,3 +200,53 @@ const updateCognito = async (userPoolId, userName, value) =>
 };
 
 ```
+
+## Crypto
+
+`npm install bip39 ethereumjs-wallet js-sha3`
+
+```javascript
+const bip39 = require("bip39");
+const { hdkey, Wallet } = require("ethereumjs-wallet");
+
+const createdMnemonic = await generateMnemonic();
+const publicAddress = await getPublicAddress(createdMnemonic)
+
+async function generateMnemonic()
+{
+    let mnemonic;
+    let attempt = 0;
+    do
+    {
+        attempt = attempt + 1;
+        mnemonic = bip39.generateMnemonic();
+        console.log(`${attempt} attempt trying menomic`, mnemonic);
+    } while (bip39.validateMnemonic(mnemonic) === false);
+    return mnemonic;
+}
+
+async function getPublicAddress(createdMnemonic)
+{
+    /*
+       Ethereum derivePath m/44'/60'/0'/0
+       Ledger derivePath m/44'/60'/0'
+       To check addresses goto iancoleman.io/bip39, Change Derivation path to Bip32 and BIP32 path to m/44'/60'/0' same as above.
+   */
+    const seed = await bip39.mnemonicToSeed(createdMnemonic);
+    const hdWallet = hdkey.fromMasterSeed(seed);
+    const masterNode = hdWallet.derivePath("m/44'/60'/0'");
+    const masterExtendedPublicKey = masterNode.publicExtendedKey();
+    const myWallet = hdkey.fromExtendedKey(masterExtendedPublicKey);
+    console.log("createdMnemonic:", createdMnemonic);
+    let public_address;
+    for (let i = 0; i < 1; i++)
+    {
+        //Change i for more public addresses
+        const node = myWallet.derivePath("m/" + i);
+        const nodeWallet = node.getWallet();
+        public_address = nodeWallet.getAddressString();
+        console.log("public_address:", public_address);
+    }
+    return public_address
+}
+```
