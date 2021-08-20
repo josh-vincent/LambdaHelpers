@@ -127,3 +127,76 @@ app.post("/webhook", async function (req, res)
   res.json({ received: true })
 })
 ```
+
+```javascript
+async function createUserInStripe(data)
+{
+    //console.log("adding to stripe:", data);
+    const { username, email, sub } = data;
+    const createdUser = await stripeTest.customers
+        .create({
+            name: username,
+            email: email,
+            description: sub,
+        })
+        .then((result) =>
+        {
+            console.log("result", result);
+            return result;
+        })
+        .catch((err) => console.log("err", err));
+    return createdUser;
+}
+```
+
+## Stripe Customer Portal
+
+```
+$ amplify add api
+$ REST
+$ API Gateway
+```
+
+```javascript
+app.post('/create-customer-portal-session', async (req, res) =>
+{
+    let returnUrl = 'https://www.mywebsite.com/dashboard';
+    // req = {body: stripe_id: cus_123456}
+  try
+  {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: `${req.body.stripe_id}`,
+      return_url: returnUrl,
+    });
+    res.json(session);
+  } catch (err)
+  {
+    res.json(err);
+  }
+});
+```
+
+
+## Cognito
+
+Assign correct permissions to update cognito with lambda role
+
+```javascript
+// Value containing {stripe_id: cus_123456}
+const updateCognito = async (userPoolId, userName, value) =>
+{
+    // CustomAttribute in cognito custom:stripe_id
+    const updatedUser = await cognito.adminUpdateUserAttributes({
+        UserAttributes: [
+            {
+                Name: `custom:stripe_id`,
+                Value: value.stripe_id,
+            },
+        ],
+        UserPoolId: userPoolId,
+        Username: userName,
+    }).promise();
+    return updatedUser;
+};
+
+```
